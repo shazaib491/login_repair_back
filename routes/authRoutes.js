@@ -17,7 +17,7 @@ router.post('/register', (req, res, next) => {
                 res.json({
                     success: 'Account Registered'
                 })
-            } 
+            }
             }).catch((err) => {
                 res.json(err)
             }
@@ -34,12 +34,15 @@ router.post('/login', (req, res, next) => {
 
     let email = req.body.email;
     let password = req.body.password;
+
     admin.getUSerByEmail(email).then((user) => {
-        console.log(user)
-            let pass;
-                pass = user.password
-            admin.comparePassword(password, pass).then((result) => {
-                console.log(result)
+      if(!user) {
+        res.json({error:'Please Fill right information'})
+      }
+      else
+      {
+              let  pass = user.password
+            admin.comparePassword(password,pass).then((result) => {
                 secret = "amazon";
                 const token = jwt.sign({
                         user
@@ -52,7 +55,7 @@ router.post('/login', (req, res, next) => {
                         success: "Welcome",
                         token: token
                     })
-                } else {
+                } else if(!result){
                     res.json({
                         error: "Please Fill right info"
                     })
@@ -60,6 +63,7 @@ router.post('/login', (req, res, next) => {
             }).catch((err) => {
                 res.json(err);
             })
+          }
         }
     )
 })
